@@ -7,12 +7,11 @@ export default {
   env: process.env.NODE_ENV || 'development',
   port: process.env.PORT || 5000,
   database_url: process.env.DATABASE_URL || 'mongodb://localhost:27017',
-  default_student_pass: process.env.DEFAULT_STUDENT_PASS,
-  default_admin_pass: process.env.DEFAULT_ADMIN_PASS,
   bycrypt_salt_rounds: process.env.BCRYPT_SALT_ROUNDS || 10,
   allowed_origins: process.env.ALLOWED_ORIGINS?.split(',') || [
     'http://localhost:3000',
   ],
+  admin_registration_key: process.env.ADMIN_REGISTRATION_KEY || 'rasel739',
   jwt: {
     secret: process.env.JWT_SECRET || 'demo123',
     refresh_secret: process.env.JWT_REFRESH_SECRET || 'demo123',
@@ -23,6 +22,10 @@ export default {
     url: process.env.REDIS_URL || 'redis://localhost:6379',
     expires_in: process.env.REDIS_TOKEN_EXPIRES_IN || '7d',
   },
-  email: process.env.EMAIL,
-  appPass: process.env.APP_PASS,
+  email: {
+    email_user: process.env.EMAIL_USER,
+    google_client_id: process.env.GOOGLE_CLIENT_ID,
+    google_client_secret: process.env.GOOGLE_CLIENT_SECRET,
+    google_refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+  },
 };
