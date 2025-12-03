@@ -9,3 +9,12 @@ export const authLimiter = rateLimit({
   },
   skipSuccessfulRequests: true,
 });
+
+export const apiLimiter = rateLimit({
+  windowMs: 60 * 1000,
+  max: 60,
+  message: {
+    success: false,
+    message: 'Too many requests — please wait and try again shortly',
+  },
+});
