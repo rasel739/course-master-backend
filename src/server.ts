@@ -1,7 +1,9 @@
 import app from './app';
 import config from './config';
+import { connectDB } from './config/db';
 
 const server = app.listen(config.port, async () => {
+  connectDB();
   console.log(`Application is running on port ${config.port}`);
 });
 

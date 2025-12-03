@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from 'express';
 import httpStatus from 'http-status';
-import { Secret } from 'jsonwebtoken';
+import { JwtPayload, Secret } from 'jsonwebtoken';
 import config from '../../config';
 import ApiError from '../../errors/ApiErrors';
 import { jwtUtils } from '../../utils/jwt.utils';
@@ -15,7 +15,7 @@ const auth =
         throw new ApiError(httpStatus.UNAUTHORIZED, 'You are not authorized');
       }
       // verify token
-      let verifiedUser = null;
+      let verifiedUser: JwtPayload | null;
 
       verifiedUser = jwtUtils.verifyToken(token, config.jwt.secret as Secret);
 
