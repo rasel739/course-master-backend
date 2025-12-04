@@ -6,6 +6,7 @@ import {
   IRefreshTokenResponse,
   IRegister,
   IRegisterResponse,
+  IUser,
 } from './auth.type';
 import config from '../../../config';
 import { isDevelopment } from '../../../constants';
@@ -115,8 +116,21 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
   };
 };
 
+const getMe = async (
+  userId: string,
+): Promise<Pick<IUser, '_id' | 'name' | 'email' | 'role'>> => {
+  const user = await User.findById(userId);
+
+  if (!user) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Invalid Request');
+  }
+
+  return user;
+};
+
 export const AuthService = {
   createUser,
   loginUser,
   refreshToken,
+  getMe,
 };

@@ -66,8 +66,45 @@ const refreshToken = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const logout = catchAsync(async (req: Request, res: Response) => {
+  const { userId } = req.user as { userId: string };
+
+  if (userId) {
+    res.clearCookie('accessToken', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'strict',
+    });
+
+    res.clearCookie('refreshToken', {
+      httpOnly: true,
+      secure: isProduction,
+      sameSite: 'strict',
+    });
+  }
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Logout successful',
+  });
+});
+
+const getMe = catchAsync(async (req: Request, res: Response) => {
+  const { userId } = req.user as { userId: string };
+
+  const result = await AuthService.getMe(userId);
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    data: result,
+  });
+});
+
 export const AuthController = {
   createUser,
   loginUser,
   refreshToken,
+  logout,
+  getMe,
 };
