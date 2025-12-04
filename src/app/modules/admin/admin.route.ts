@@ -27,6 +27,46 @@ router.get(
 );
 
 router.post(
+  '/courses/:courseId/modules',
+  validateRequest(AdminValidation.createModuleZodSchema),
+  AdminController.addModule,
+);
+router.put(
+  '/courses/:courseId/modules/:moduleId',
+  validateRequest(AdminValidation.updateModuleZodSchema),
+  AdminController.updateModule,
+);
+router.delete(
+  '/courses/:courseId/modules/:moduleId',
+  AdminController.deleteModule,
+);
+router.put(
+  '/courses/:courseId/modules/reorder',
+  validateRequest(AdminValidation.reorderModulesZodSchema),
+  AdminController.reorderModules,
+);
+
+router.post(
+  '/courses/:courseId/modules/:moduleId/lessons',
+  validateRequest(AdminValidation.createLessonZodSchema),
+  AdminController.addLesson,
+);
+router.put(
+  '/courses/:courseId/modules/:moduleId/lessons/:lessonId',
+  validateRequest(AdminValidation.updateLessonZodSchema),
+  AdminController.updateLesson,
+);
+router.delete(
+  '/courses/:courseId/modules/:moduleId/lessons/:lessonId',
+  AdminController.deleteLesson,
+);
+router.put(
+  '/courses/:courseId/modules/:moduleId/lessons/reorder',
+  validateRequest(AdminValidation.reorderLessonsZodSchema),
+  AdminController.reorderLessons,
+);
+
+router.post(
   '/assignments',
   validateRequest(AdminValidation.createAssignmentZodSchema),
   AdminController.createAssignment,

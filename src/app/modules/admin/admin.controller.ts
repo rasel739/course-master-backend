@@ -113,6 +113,134 @@ const getAnalytics = catchAsync(async (req: Request, res: Response) => {
   });
 });
 
+const addModule = catchAsync(async (req: Request, res: Response) => {
+  const courseId = req.params.courseId as string;
+  const result = await AdminService.addModule(courseId, req.body);
+
+  sendResponse<ICourse>(res, {
+    statusCode: httpStatus.CREATED,
+    message: 'Module added successfully',
+    success: true,
+    data: result,
+  });
+});
+
+const updateModule = catchAsync(async (req: Request, res: Response) => {
+  const { courseId, moduleId } = req.params as {
+    courseId: string;
+    moduleId: string;
+  };
+  const result = await AdminService.updateModule(courseId, moduleId, req.body);
+
+  sendResponse<ICourse>(res, {
+    statusCode: httpStatus.OK,
+    message: 'Module updated successfully',
+    success: true,
+    data: result,
+  });
+});
+
+const deleteModule = catchAsync(async (req: Request, res: Response) => {
+  const { courseId, moduleId } = req.params as {
+    courseId: string;
+    moduleId: string;
+  };
+  const result = await AdminService.deleteModule(courseId, moduleId);
+
+  sendResponse<ICourse>(res, {
+    statusCode: httpStatus.OK,
+    message: 'Module deleted successfully',
+    success: true,
+    data: result,
+  });
+});
+
+const reorderModules = catchAsync(async (req: Request, res: Response) => {
+  const courseId = req.params.courseId as string;
+  const result = await AdminService.reorderModules(
+    courseId,
+    req.body.moduleOrders,
+  );
+
+  sendResponse<ICourse>(res, {
+    statusCode: httpStatus.OK,
+    message: 'Modules reordered successfully',
+    success: true,
+    data: result,
+  });
+});
+
+const addLesson = catchAsync(async (req: Request, res: Response) => {
+  const { courseId, moduleId } = req.params as {
+    courseId: string;
+    moduleId: string;
+  };
+  const result = await AdminService.addLesson(courseId, moduleId, req.body);
+
+  sendResponse<ICourse>(res, {
+    statusCode: httpStatus.CREATED,
+    message: 'Lesson added successfully',
+    success: true,
+    data: result,
+  });
+});
+
+const updateLesson = catchAsync(async (req: Request, res: Response) => {
+  const { courseId, moduleId, lessonId } = req.params as {
+    courseId: string;
+    moduleId: string;
+    lessonId: string;
+  };
+  const result = await AdminService.updateLesson(
+    courseId,
+    moduleId,
+    lessonId,
+    req.body,
+  );
+
+  sendResponse<ICourse>(res, {
+    statusCode: httpStatus.OK,
+    message: 'Lesson updated successfully',
+    success: true,
+    data: result,
+  });
+});
+
+const deleteLesson = catchAsync(async (req: Request, res: Response) => {
+  const { courseId, moduleId, lessonId } = req.params as {
+    courseId: string;
+    moduleId: string;
+    lessonId: string;
+  };
+  const result = await AdminService.deleteLesson(courseId, moduleId, lessonId);
+
+  sendResponse<ICourse>(res, {
+    statusCode: httpStatus.OK,
+    message: 'Lesson deleted successfully',
+    success: true,
+    data: result,
+  });
+});
+
+const reorderLessons = catchAsync(async (req: Request, res: Response) => {
+  const { courseId, moduleId } = req.params as {
+    courseId: string;
+    moduleId: string;
+  };
+  const result = await AdminService.reorderLessons(
+    courseId,
+    moduleId,
+    req.body.lessonOrders,
+  );
+
+  sendResponse<ICourse>(res, {
+    statusCode: httpStatus.OK,
+    message: 'Lessons reordered successfully',
+    success: true,
+    data: result,
+  });
+});
+
 export const AdminController = {
   createCourse,
   updateCourse,
@@ -123,4 +251,14 @@ export const AdminController = {
   createAssignment,
   createQuiz,
   getAnalytics,
+
+  addModule,
+  updateModule,
+  deleteModule,
+  reorderModules,
+
+  addLesson,
+  updateLesson,
+  deleteLesson,
+  reorderLessons,
 };

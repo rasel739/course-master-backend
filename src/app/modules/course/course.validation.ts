@@ -15,7 +15,7 @@ const courseZodSchema = z.object({
     ]),
     tags: z.array(z.string()).optional(),
     price: z.number().min(0),
-    thumbnail: z.string().url().optional().nullable(),
+    thumbnail: z.string().optional().nullable(),
     modules: z
       .array(
         z.object({

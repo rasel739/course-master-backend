@@ -50,7 +50,129 @@ const createQuizZodSchema = z.object({
   }),
 });
 
+const createModuleZodSchema = z.object({
+  body: z.object({
+    title: z
+      .string()
+      .min(1, 'Module title is required')
+      .max(200, 'Title cannot exceed 200 characters'),
+    description: z
+      .string()
+      .max(1000, 'Description cannot exceed 1000 characters')
+      .optional(),
+    order: z
+      .number()
+      .int('Order must be an integer')
+      .min(1, 'Order must be at least 1')
+      .optional(),
+  }),
+});
+
+const updateModuleZodSchema = z.object({
+  body: z.object({
+    title: z
+      .string()
+      .min(1, 'Module title is required')
+      .max(200, 'Title cannot exceed 200 characters')
+      .optional(),
+    description: z
+      .string()
+      .max(1000, 'Description cannot exceed 1000 characters')
+      .optional(),
+    order: z
+      .number()
+      .int('Order must be an integer')
+      .min(1, 'Order must be at least 1')
+      .optional(),
+  }),
+});
+
+const reorderModulesZodSchema = z.object({
+  body: z.object({
+    moduleOrders: z
+      .array(
+        z.object({
+          moduleId: z
+            .string()
+            .regex(/^[0-9a-fA-F]{24}$/, 'Invalid module ID format'),
+          order: z
+            .number()
+            .int('Order must be an integer')
+            .min(1, 'Order must be at least 1'),
+        }),
+      )
+      .min(1, 'At least one module order is required'),
+  }),
+});
+
+const createLessonZodSchema = z.object({
+  body: z.object({
+    title: z
+      .string()
+      .min(1, 'Lesson title is required')
+      .max(200, 'Title cannot exceed 200 characters'),
+    videoUrl: z
+      .string()
+      .url('Video URL must be a valid URL')
+      .min(1, 'Video URL is required'),
+    duration: z
+      .number()
+      .min(1, 'Duration must be at least 1 minute')
+      .max(600, 'Duration cannot exceed 600 minutes'),
+    order: z
+      .number()
+      .int('Order must be an integer')
+      .min(1, 'Order must be at least 1')
+      .optional(),
+  }),
+});
+
+const updateLessonZodSchema = z.object({
+  body: z.object({
+    title: z
+      .string()
+      .min(1, 'Lesson title is required')
+      .max(200, 'Title cannot exceed 200 characters')
+      .optional(),
+    videoUrl: z.string().url('Video URL must be a valid URL').optional(),
+    duration: z
+      .number()
+      .min(1, 'Duration must be at least 1 minute')
+      .max(600, 'Duration cannot exceed 600 minutes')
+      .optional(),
+    order: z
+      .number()
+      .int('Order must be an integer')
+      .min(1, 'Order must be at least 1')
+      .optional(),
+  }),
+});
+
+const reorderLessonsZodSchema = z.object({
+  body: z.object({
+    lessonOrders: z
+      .array(
+        z.object({
+          lessonId: z
+            .string()
+            .regex(/^[0-9a-fA-F]{24}$/, 'Invalid lesson ID format'),
+          order: z
+            .number()
+            .int('Order must be an integer')
+            .min(1, 'Order must be at least 1'),
+        }),
+      )
+      .min(1, 'At least one lesson order is required'),
+  }),
+});
+
 export const AdminValidation = {
   createAssignmentZodSchema,
   createQuizZodSchema,
+  createModuleZodSchema,
+  updateModuleZodSchema,
+  reorderModulesZodSchema,
+  createLessonZodSchema,
+  updateLessonZodSchema,
+  reorderLessonsZodSchema,
 };

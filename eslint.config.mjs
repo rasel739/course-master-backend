@@ -35,7 +35,11 @@ export default [
       'no-unused-expressions': 'error',
       'no-console': 'off',
 
-      '@typescript-eslint/consistent-type-definitions': ['error', 'type'],
+      '@typescript-eslint/consistent-type-definitions': [
+        'error',
+        'type',
+        'interface',
+      ],
       '@typescript-eslint/explicit-module-boundary-types': 'off',
 
       '@typescript-eslint/no-unused-vars': ['error'],

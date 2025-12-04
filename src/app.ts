@@ -9,10 +9,13 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import { sanitizeInputs } from './app/middlewares/sanitizeInputs';
 import { initEmailService } from './utils/email.utils';
+import { connectRedis } from './config/redis';
 
 const app: Application = express();
 
-// initEmailService();
+initEmailService();
+
+connectRedis();
 
 app.use(
   helmet({
