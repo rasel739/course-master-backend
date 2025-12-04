@@ -12,10 +12,13 @@ const auth =
       //get authorization token
       const token = req.headers.authorization;
       if (!token) {
-        throw new ApiError(httpStatus.UNAUTHORIZED, 'You are not authorized');
+        throw new ApiError(
+          httpStatus.UNAUTHORIZED,
+          'Unable to process request',
+        );
       }
       // verify token
-      let verifiedUser: JwtPayload | null;
+      let verifiedUser: JwtPayload | null = null;
 
       verifiedUser = jwtUtils.verifyToken(token, config.jwt.secret as Secret);
 

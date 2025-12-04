@@ -1,14 +1,9 @@
-import {
-  IAssignment,
-  IEnrollment,
-  IQuiz,
-  ISubmission,
-} from './../../../types/index';
+import { IAssignment, IQuiz, ISubmission } from './../../../types/index';
 import httpStatus from 'http-status';
 import ApiError from '../../../errors/ApiErrors';
 import { deleteCachePattern } from '../../../utils/cache.utils';
 import Course from '../course/course.model';
-import { ICourse } from '../course/course.type';
+import { ICourse, ILesson, IModule } from '../course/course.type';
 import { Enrollment } from '../../../models';
 import {
   IAnalyticsParams,
@@ -211,6 +206,258 @@ const getAnalytics = async (
   };
 };
 
+const addModule = async (
+  courseId: string,
+  moduleData: Partial<IModule>,
+): Promise<ICourse> => {
+  const course = await Course.findById(courseId);
+
+  if (!course) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Course not found');
+  }
+
+  const maxOrder = course.modules.reduce((max, m) => Math.max(max, m.order), 0);
+
+  const newModule = {
+    _id: new Types.ObjectId(),
+    title: moduleData.title!,
+    description: moduleData.description,
+    lessons: [],
+    order: moduleData.order ?? maxOrder + 1,
+  };
+
+  course.modules.push(newModule as IModule);
+  await course.save();
+
+  await deleteCachePattern('courses:*');
+
+  return course;
+};
+
+const updateModule = async (
+  courseId: string,
+  moduleId: string,
+  moduleData: Partial<IModule>,
+): Promise<ICourse> => {
+  const course = await Course.findById(courseId);
+
+  if (!course) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Course not found');
+  }
+
+  const moduleObjectId = new Types.ObjectId(moduleId);
+  const module = course.modules.find(m => m._id.equals(moduleObjectId));
+
+  if (!module) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Module not found');
+  }
+
+  if (moduleData.title) module.title = moduleData.title;
+  if (moduleData.description !== undefined)
+    module.description = moduleData.description;
+  if (moduleData.order !== undefined) module.order = moduleData.order;
+
+  await course.save();
+  await deleteCachePattern('courses:*');
+
+  return course;
+};
+
+const deleteModule = async (
+  courseId: string,
+  moduleId: string,
+): Promise<ICourse> => {
+  const course = await Course.findById(courseId);
+
+  if (!course) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Course not found');
+  }
+
+  const moduleObjectId = new Types.ObjectId(moduleId);
+  const moduleIndex = course.modules.findIndex(m =>
+    m._id.equals(moduleObjectId),
+  );
+
+  if (moduleIndex === -1) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Module not found');
+  }
+
+  course.modules.splice(moduleIndex, 1);
+  await course.save();
+
+  await deleteCachePattern('courses:*');
+
+  return course;
+};
+
+const reorderModules = async (
+  courseId: string,
+  moduleOrders: { moduleId: string; order: number }[],
+): Promise<ICourse> => {
+  const course = await Course.findById(courseId);
+
+  if (!course) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Course not found');
+  }
+
+  moduleOrders.forEach(({ moduleId, order }) => {
+    const moduleObjectId = new Types.ObjectId(moduleId);
+    const module = course.modules.find(m => m._id.equals(moduleObjectId));
+    if (module) {
+      module.order = order;
+    }
+  });
+
+  course.modules.sort((a, b) => a.order - b.order);
+  await course.save();
+
+  await deleteCachePattern('courses:*');
+
+  return course;
+};
+
+const addLesson = async (
+  courseId: string,
+  moduleId: string,
+  lessonData: Partial<ILesson>,
+): Promise<ICourse> => {
+  const course = await Course.findById(courseId);
+
+  if (!course) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Course not found');
+  }
+
+  const moduleObjectId = new Types.ObjectId(moduleId);
+  const module = course.modules.find(m => m._id.equals(moduleObjectId));
+
+  if (!module) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Module not found');
+  }
+
+  const maxOrder = module.lessons.reduce((max, l) => Math.max(max, l.order), 0);
+
+  const newLesson = {
+    _id: new Types.ObjectId(),
+    title: lessonData.title!,
+    videoUrl: lessonData.videoUrl!,
+    duration: lessonData.duration!,
+    order: lessonData.order ?? maxOrder + 1,
+  };
+
+  module.lessons.push(newLesson as ILesson);
+  await course.save();
+
+  await deleteCachePattern('courses:*');
+
+  return course;
+};
+
+const updateLesson = async (
+  courseId: string,
+  moduleId: string,
+  lessonId: string,
+  lessonData: Partial<ILesson>,
+): Promise<ICourse> => {
+  const course = await Course.findById(courseId);
+
+  if (!course) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Course not found');
+  }
+
+  const moduleObjectId = new Types.ObjectId(moduleId);
+  const module = course.modules.find(m => m._id.equals(moduleObjectId));
+
+  if (!module) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Module not found');
+  }
+
+  const lessonObjectId = new Types.ObjectId(lessonId);
+  const lesson = module.lessons.find(l => l._id.equals(lessonObjectId));
+
+  if (!lesson) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Lesson not found');
+  }
+
+  if (lessonData.title) lesson.title = lessonData.title;
+  if (lessonData.videoUrl) lesson.videoUrl = lessonData.videoUrl;
+  if (lessonData.duration) lesson.duration = lessonData.duration;
+  if (lessonData.order !== undefined) lesson.order = lessonData.order;
+
+  await course.save();
+  await deleteCachePattern('courses:*');
+
+  return course;
+};
+
+const deleteLesson = async (
+  courseId: string,
+  moduleId: string,
+  lessonId: string,
+): Promise<ICourse> => {
+  const course = await Course.findById(courseId);
+
+  if (!course) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Course not found');
+  }
+
+  const moduleObjectId = new Types.ObjectId(moduleId);
+  const module = course.modules.find(m => m._id.equals(moduleObjectId));
+
+  if (!module) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Module not found');
+  }
+
+  const lessonObjectId = new Types.ObjectId(lessonId);
+  const lessonIndex = module.lessons.findIndex(l =>
+    l._id.equals(lessonObjectId),
+  );
+
+  if (lessonIndex === -1) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Lesson not found');
+  }
+
+  module.lessons.splice(lessonIndex, 1);
+  await course.save();
+
+  await deleteCachePattern('courses:*');
+
+  return course;
+};
+
+const reorderLessons = async (
+  courseId: string,
+  moduleId: string,
+  lessonOrders: { lessonId: string; order: number }[],
+): Promise<ICourse> => {
+  const course = await Course.findById(courseId);
+
+  if (!course) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Course not found');
+  }
+
+  const moduleObjectId = new Types.ObjectId(moduleId);
+  const module = course.modules.find(m => m._id.equals(moduleObjectId));
+
+  if (!module) {
+    throw new ApiError(httpStatus.NOT_FOUND, 'Module not found');
+  }
+
+  lessonOrders.forEach(({ lessonId, order }) => {
+    const lessonObjectId = new Types.ObjectId(lessonId);
+    const lesson = module.lessons.find(l => l._id.equals(lessonObjectId));
+    if (lesson) {
+      lesson.order = order;
+    }
+  });
+
+  module.lessons.sort((a, b) => a.order - b.order);
+  await course.save();
+
+  await deleteCachePattern('courses:*');
+
+  return course;
+};
+
 export const AdminService = {
   createCourse,
   updateCourse,
@@ -221,4 +468,12 @@ export const AdminService = {
   createAssignment,
   createQuiz,
   getAnalytics,
+  addModule,
+  updateModule,
+  deleteModule,
+  reorderModules,
+  addLesson,
+  updateLesson,
+  deleteLesson,
+  reorderLessons,
 };
