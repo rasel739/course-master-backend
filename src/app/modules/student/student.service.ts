@@ -20,7 +20,7 @@ const enrollCourse = async (
   courseId: string,
   userId: string,
 ): Promise<IEnrollment> => {
-  const course = await Course.findById(courseId);
+  const course = await Course.findById(courseId).lean();
 
   if (!course) {
     throw new ApiError(httpStatus.NOT_FOUND, 'Course not found');

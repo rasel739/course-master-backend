@@ -4,7 +4,13 @@ import catchAsync from '../../../shared/catchAsync';
 import { AdminService } from './admin.service';
 import { ICourse } from '../course/course.type';
 import sendResponse from '../../../shared/sendResponse';
-import { IAnalyticsResult, IEnrollmentResponse } from './admin.type';
+import {
+  IAnalyticsResult,
+  IEnrollmentResponse,
+  IAssignmentsResponse,
+  IQuizzesResponse,
+  IAllEnrollmentsResponse,
+} from './admin.type';
 import { IAssignment, IQuiz, ISubmission } from '../../../types';
 import { IGradeBody, IGradeParams } from '../admin/admin.type';
 
@@ -48,6 +54,36 @@ const getCourseEnrollments = catchAsync(async (req: Request, res: Response) => {
   const result = await AdminService.getCourseEnrollments(courseId, req.query);
 
   sendResponse<IEnrollmentResponse>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    data: result,
+  });
+});
+
+const getAssignments = catchAsync(async (req: Request, res: Response) => {
+  const result = await AdminService.getAssignments(req.query);
+
+  sendResponse<IAssignmentsResponse>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    data: result,
+  });
+});
+
+const getQuizzes = catchAsync(async (req: Request, res: Response) => {
+  const result = await AdminService.getQuizzes(req.query);
+
+  sendResponse<IQuizzesResponse>(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    data: result,
+  });
+});
+
+const getAllEnrollments = catchAsync(async (req: Request, res: Response) => {
+  const result = await AdminService.getAllEnrollments(req.query);
+
+  sendResponse<IAllEnrollmentsResponse>(res, {
     statusCode: httpStatus.OK,
     success: true,
     data: result,
@@ -104,7 +140,7 @@ const createQuiz = catchAsync(async (req: Request, res: Response) => {
 });
 
 const getAnalytics = catchAsync(async (req: Request, res: Response) => {
-  const result = await AdminService.getAnalytics(req.params);
+  const result = await AdminService.getAnalytics(req.query);
 
   sendResponse<IAnalyticsResult>(res, {
     statusCode: httpStatus.OK,
@@ -246,6 +282,9 @@ export const AdminController = {
   updateCourse,
   deleteCourse,
   getCourseEnrollments,
+  getAssignments,
+  getQuizzes,
+  getAllEnrollments,
   getAssignmentSubmissions,
   gradeAssignment,
   createAssignment,
@@ -262,3 +301,4 @@ export const AdminController = {
   deleteLesson,
   reorderLessons,
 };
+

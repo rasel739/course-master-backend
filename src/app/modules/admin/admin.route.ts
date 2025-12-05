@@ -87,5 +87,9 @@ router.post(
 );
 
 router.get('/analytics', AdminController.getAnalytics);
+router.get('/assignments', AdminController.getAssignments);
+router.get('/quizzes', AdminController.getQuizzes);
+router.get('/enrollments', AdminController.getAllEnrollments);
 
 export const AdminRoutes = router;
+
