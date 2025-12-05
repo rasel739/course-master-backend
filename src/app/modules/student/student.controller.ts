@@ -3,13 +3,12 @@ import { Request, Response } from 'express';
 import catchAsync from '../../../shared/catchAsync';
 import { StudentService } from './student.service';
 import sendResponse from '../../../shared/sendResponse';
-import { IEnrollment, IMarkLessonCompleteInput } from '../../../types';
-import { Enrollment } from '../../../models';
-import ApiError from '../../../errors/ApiErrors';
+import { IEnrollment } from '../../../types';
+
 import { ISubmitQuizResponse } from './student.type';
 
 const enrollCourse = catchAsync(async (req: Request, res: Response) => {
-  const courseId = req.params.id as string;
+  const courseId = req.params.courseId as string;
   const { userId } = req.user as { userId: string };
 
   const result = await StudentService.enrollCourse(courseId, userId);

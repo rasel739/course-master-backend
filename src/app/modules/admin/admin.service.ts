@@ -9,6 +9,9 @@ import {
   IAnalyticsParams,
   IAnalyticsResult,
   IEnrollmentResponse,
+  IAssignmentsResponse,
+  IQuizzesResponse,
+  IAllEnrollmentsResponse,
 } from './admin.type';
 import {
   IGradeBody,
@@ -87,6 +90,108 @@ const getCourseEnrollments = async (
       currentPage: pageNum,
       totalPages: Math.ceil(total / limitNum),
       totalEnrollments: total,
+    },
+  };
+};
+
+const getAssignments = async (
+  payload: IPaginationQuery,
+): Promise<IAssignmentsResponse> => {
+  const { page, limit } = payload;
+
+  const pageNum = page || 1;
+  const limitNum = limit || 20;
+  const skip = (pageNum - 1) * limitNum;
+
+  const [assignments, total] = await Promise.all([
+    Assignment.find()
+      .populate('course', 'title')
+      .populate('submissions.user', 'name email')
+      .sort('-createdAt')
+      .skip(skip)
+      .limit(limitNum)
+      .lean(),
+    Assignment.countDocuments(),
+  ]);
+
+  const totalPages = Math.ceil(total / limitNum);
+
+  return {
+    assignments,
+    pagination: {
+      currentPage: pageNum,
+      totalPages,
+      totalAssignments: total,
+      hasNext: pageNum < totalPages,
+      hasPrev: pageNum > 1,
+    },
+  };
+};
+
+const getQuizzes = async (
+  payload: IPaginationQuery,
+): Promise<IQuizzesResponse> => {
+  const { page, limit } = payload;
+
+  const pageNum = page || 1;
+  const limitNum = limit || 20;
+  const skip = (pageNum - 1) * limitNum;
+
+  const [quizzes, total] = await Promise.all([
+    Quiz.find()
+      .populate('course', 'title')
+      .populate('attempts.user', 'name email')
+      .sort('-createdAt')
+      .skip(skip)
+      .limit(limitNum)
+      .lean(),
+    Quiz.countDocuments(),
+  ]);
+
+  const totalPages = Math.ceil(total / limitNum);
+
+  return {
+    quizzes,
+    pagination: {
+      currentPage: pageNum,
+      totalPages,
+      totalQuizzes: total,
+      hasNext: pageNum < totalPages,
+      hasPrev: pageNum > 1,
+    },
+  };
+};
+
+const getAllEnrollments = async (
+  payload: IPaginationQuery,
+): Promise<IAllEnrollmentsResponse> => {
+  const { page, limit } = payload;
+
+  const pageNum = page || 1;
+  const limitNum = limit || 20;
+  const skip = (pageNum - 1) * limitNum;
+
+  const [enrollments, total] = await Promise.all([
+    Enrollment.find()
+      .populate('user', 'name email avatar')
+      .populate('course', 'title category')
+      .sort('-enrolledAt')
+      .skip(skip)
+      .limit(limitNum)
+      .lean(),
+    Enrollment.countDocuments(),
+  ]);
+
+  const totalPages = Math.ceil(total / limitNum);
+
+  return {
+    enrollments,
+    pagination: {
+      currentPage: pageNum,
+      totalPages,
+      totalEnrollments: total,
+      hasNext: pageNum < totalPages,
+      hasPrev: pageNum > 1,
     },
   };
 };
@@ -463,6 +568,9 @@ export const AdminService = {
   updateCourse,
   deleteCourse,
   getCourseEnrollments,
+  getAssignments,
+  getQuizzes,
+  getAllEnrollments,
   getAssignmentSubmissions,
   gradeAssignment,
   createAssignment,
@@ -477,3 +585,4 @@ export const AdminService = {
   deleteLesson,
   reorderLessons,
 };
+

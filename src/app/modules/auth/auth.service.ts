@@ -49,7 +49,7 @@ const createUser = async (payload: IRegister): Promise<IRegisterResponse> => {
     config.jwt.refresh_expires_in as string,
   );
 
-  // sendEmail(newUser.email, newUser.name);
+  sendEmail(newUser.email, newUser.name);
 
   return {
     accessToken,
@@ -104,7 +104,7 @@ const refreshToken = async (token: string): Promise<IRefreshTokenResponse> => {
 
   const newAccessToken = jwtUtils.createToken(
     {
-      id: isUserExist._id,
+      userId: isUserExist._id,
       role: isUserExist.role,
     },
     config.jwt.secret as Secret,

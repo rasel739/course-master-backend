@@ -50,3 +50,37 @@ export interface IAnalyticsResult {
   enrollmentTrends: IEnrollmentTrend[];
   coursesByCategory: ICoursesByCategory[];
 }
+
+export interface IAssignmentsResponse {
+  assignments: import('../../../types').IAssignment[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalAssignments: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+export interface IQuizzesResponse {
+  quizzes: import('../../../types').IQuiz[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalQuizzes: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+
+export interface IAllEnrollmentsResponse {
+  enrollments: import('../../../types').IEnrollment[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalEnrollments: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}
+

@@ -25,34 +25,40 @@ const replaceCurliesDeep = (obj: any): any => {
   return obj;
 };
 
+const sanitizeObject = (obj: Record<string, any>): void => {
+  const sanitized = mongoSanitize.sanitize(obj);
+  const cleaned = replaceCurliesDeep(sanitized);
+
+  // Mutate in place instead of reassigning
+  for (const key of Object.keys(obj)) {
+    delete obj[key];
+  }
+  Object.assign(obj, cleaned);
+};
+
 export const sanitizeInputs: RequestHandler = (
   req: Request,
   _res: Response,
   next: NextFunction,
 ): void => {
   try {
-    if (req.body) {
-      req.body = mongoSanitize.sanitize(req.body);
+    if (req.body && Object.keys(req.body).length > 0) {
+      sanitizeObject(req.body);
     }
 
     if (req.params && Object.keys(req.params).length > 0) {
-      req.params = mongoSanitize.sanitize(req.params);
+      sanitizeObject(req.params);
     }
 
+    // For Express 5, req.query is read-only, so we mutate its contents in place
     if (req.query && Object.keys(req.query).length > 0) {
-      req.query = mongoSanitize.sanitize(req.query) as typeof req.query;
-    }
+      const sanitized = mongoSanitize.sanitize(req.query);
+      const cleaned = replaceCurliesDeep(sanitized);
 
-    if (req.body) {
-      req.body = replaceCurliesDeep(req.body);
-    }
-
-    if (req.params && Object.keys(req.params).length > 0) {
-      req.params = replaceCurliesDeep(req.params);
-    }
-
-    if (req.query && Object.keys(req.query).length > 0) {
-      req.query = replaceCurliesDeep(req.query);
+      for (const key of Object.keys(req.query)) {
+        delete req.query[key];
+      }
+      Object.assign(req.query, cleaned);
     }
 
     next();
