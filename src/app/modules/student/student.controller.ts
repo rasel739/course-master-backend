@@ -23,7 +23,7 @@ const enrollCourse = catchAsync(async (req: Request, res: Response) => {
 
 const getStudentDashboard = catchAsync(async (req: Request, res: Response) => {
   const { userId } = req.user as { userId: string };
-  const result = StudentService.getStudentDashboard(userId);
+  const result = await StudentService.getStudentDashboard(userId);
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
