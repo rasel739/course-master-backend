@@ -49,7 +49,7 @@ const createUser = async (payload: IRegister): Promise<IRegisterResponse> => {
     config.jwt.refresh_expires_in as string,
   );
 
-  await sendEmail(newUser.email, newUser.name);
+  sendEmail(newUser.email, newUser.name);
 
   return {
     accessToken,
